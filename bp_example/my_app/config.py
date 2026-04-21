@@ -3,11 +3,11 @@ class Config:
 
 
 class ProductionConfig(Config):
-    DEBUG =False    
+    DEBUG = False    
     SERVER_NAME = "0.0.0.0"
     PORT = 4444
 
 class DevelopmentConfig(Config):
-    DEBUG =True    
-    RUN_HOST = "0.0.0.0" 
-    RUN_PORT=3333   
+    DEBUG = True    
+    SERVER_NAME = "0.0.0.0" 
+    PORT=3333   
