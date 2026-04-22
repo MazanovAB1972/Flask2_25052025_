@@ -3,3 +3,5 @@ class AuthorSchema(Schema):
     id = fields.Integer()
     name = fields.String()
     email = fields.Email()
+
+    
