@@ -2,7 +2,8 @@ from api import app, db
 from flask import request, abort, jsonify
 from api.models.author import AuthorModel
 from api.models.quote import QuoteModel
-
+from sqlalchemy.exc import SQLAlchemyError, InvalidRequestError
+from . import check
 
 # ====== Authors endpoints =======
 @app.post("/authors")
@@ -19,11 +20,23 @@ def create_author():
         abort(503, f"Database error: {str(e)}")
     return jsonify(author.to_dict()), 201
 
+@app.get("/authors")
+def get_authors():
+    author_db = db.session.scalars(db.select(AuthorModel)).all()
+    authors = [author.to_dict() for author in author_db]
+    return jsonify(authors), 200
+
+
+@app.get("/authors/<int:author_id>")
+def get_author_by_id(author_id:int):
+    author = db.get_or_404(AuthorModel, author_id, description=f"Author with id={author_id} not found")
+    return jsonify(author.to_dict()), 200
+
 
 # URL: "/authors/<int:author_id>/quotes"
 @app.route("/authors/<int:author_id>/quotes", methods=["GET", "POST"])
 def author_quotes(author_id: int):
-    author = db.get_or_404(AuthorModel, author_id, description=f"Author with id={author_id} not found")
+    author = db.get_or_404(AuthorModel, author_id, description=f"Author's quotes with id={author_id} not found")
 
     if request.method == "GET":
         quotes = [quote.to_dict() for quote in author.quotes]
@@ -37,3 +50,23 @@ def author_quotes(author_id: int):
         return jsonify(new_quote.to_dict() | { "author_id" : author.id}), 201
     else:
         abort(405)
+
+@app.put("/authors/<int:author_id>")
+def edit_author(author_id: int):
+    """ Update an existing author """
+    new_data = request.json
+    
+    result=new_data
+    
+    
+    author = db.get_or_404(entity=AuthorModel, ident=author_id, description=f"Author with id={author_id} not found")
+
+    try:
+        for key_as_attr, value in new_data.items():
+            setattr(author, key_as_attr, value)
+
+        db.session.commit()
+        return jsonify(author.to_dict()), 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        abort(503, f"Database error: {str(e)}") 
