@@ -70,3 +70,15 @@ def edit_author(author_id: int):
     except SQLAlchemyError as e:
         db.session.rollback()
         abort(503, f"Database error: {str(e)}") 
+
+@app.route("/authors/<int:author_id>", methods=['DELETE'])
+def delete_author(author_id):
+    """Delete quote by id """
+    author = db.get_or_404(entity=AuthorModel, ident=author_id, description=f"Author with id={author_id} not found")
+    db.session.delete(author)
+    try:
+        db.session.commit()
+        return jsonify({"message": f"Author with id {author_id} has deleted."}), 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        abort(503, f"Database error: {str(e)}")        
