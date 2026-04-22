@@ -17,4 +17,4 @@ class AuthorModel(db.Model):
         self.surname2=surname2
 
     def to_dict(self):
-        return {"id": self.id, "name": self.name, "surname": self.surname} 
+        return {"id": self.id, "name": self.name, "surname": self.surname, "surname2": self.surname2} 
