@@ -13,7 +13,7 @@ app.config.from_object("config.DevConfig")
 
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, compare_server_default=True)
 
 from api.handlers import author
 from api.handlers import quote
