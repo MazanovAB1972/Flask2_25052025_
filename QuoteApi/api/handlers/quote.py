@@ -21,7 +21,6 @@ def get_quote_by_id(quote_id: int):
     return jsonify(quote.to_dict()), 200
 
 
-
 @app.get("/quotes/count")
 def get_quotes_count() -> int:
     """ Return count of quotes in db."""

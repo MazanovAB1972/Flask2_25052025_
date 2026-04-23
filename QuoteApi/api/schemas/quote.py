@@ -3,13 +3,17 @@ from api.models.quote import QuoteModel
 from api.schemas.author import AuthorSchema
 
 
+def rating_validate(value: int):
+    return value in (1,6)
+
 class QuoteSchema(ma.SQLAlchemySchema):
       class Meta:
         model = QuoteModel
 
         id = ma.auto_field()
         text = ma.auto_field()
-        author = ma.Nested(AuthorSchema(only=("id"))
+        author = ma.Nested(AuthorSchema(only=("name")))
+        rating = ma.Integer(strict=True, validate=rating_validate)                           
 
 quote_schema = QuoteSchema()
 quotes_schema = QuoteSchema(many=True)       
