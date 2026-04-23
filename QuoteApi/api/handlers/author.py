@@ -14,8 +14,8 @@ def create_author():
     
     # add_to_db(AuthorModel, author_data)  # Variant 2
     try:
-        author_data = author_schema.loads(request.data)
-        author = AuthorModel(**author_data)
+        author = author_schema.loads(request.data)
+        #author = AuthorModel(**author_data)
         db.session.add(author)
         db.session.commit()
     except ValidationError as ve:
@@ -37,7 +37,7 @@ def get_authors():
 def get_author_by_id(author_id:int):
     #author = db.session.scalars(db.select(AuthorModel).filter(AuthorModel.id==author_id)).all()
     author = db.get_or_404(AuthorModel, author_id, description=f"Author's quotes with id={author_id} not found")
-    return jsonify(authors_schema.dump(author)), 200
+    return jsonify(author_schema.dump(author)), 200
 
 
 # URL: "/authors/<int:author_id>/quotes"
